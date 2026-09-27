@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>bingchillin</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+<section id="auth" class="auth">
+    <div class="box">
+        <div class="logo"><span id="logoEmoji">🌿</span> bingchillin</div>
+        <div class="tag">
+            Simple, private, and easy online shopping.
+        </div>
+
+        <div class="tabs">
+            <button id="lt" onclick="authTab('login')">Log In</button>
+            <button id="rt" onclick="authTab('register')">Register</button>
+        </div>
+
+        <div id="login">
+            <form class="form" onsubmit="login(event)">
+                <input id="le" type="email" placeholder="Email address" required>
+                <input id="lp" type="password" placeholder="Password" required>
+
+                <label class="check">
+                    <input id="remember" type="checkbox"> Remember me
+                </label>
+
+                <button class="primary">Log In</button>
+            </form>
+
+            <button class="full-width spaced" onclick="authTab('forgot')">
+                Forgot Password?
+            </button>
+
+            <div id="lm"></div>
+        </div>
+
+        <div id="register" class="hidden">
+            <div class="msg">
+                Registration requires owner approval before the account can log in.
+            </div>
+
+            <form class="form form-spaced" onsubmit="register(event)">
+                <input id="rn" placeholder="Full name" required>
+                <input id="re" type="email" placeholder="Email address" required>
+                <input id="rp" type="password" minlength="6" placeholder="Password (6+ characters)" required>
+                <input id="rp2" type="password" minlength="6" placeholder="Confirm password" required>
+                <button class="primary">Submit Registration</button>
+            </form>
+
+            <div id="rm"></div>
+        </div>
+
+        <div id="forgot" class="hidden">
+            <p class="muted">Enter your approved email and choose a new password.</p>
+
+            <form class="form" onsubmit="forgot(event)">
+                <input id="fe" type="email" placeholder="Email address" required>
+                <input id="fp" type="password" minlength="6" placeholder="New password" required>
+                <button class="primary">Change Password</button>
+            </form>
+
+            <button class="full-width spaced" onclick="authTab('login')">
+                Back to Login
+            </button>
+
+            <div id="fm"></div>
+        </div>
+    </div>
+</section>
+
+<section id="shop" class="hidden">
+    <header>
+        <div class="headlogo">🌿 bingchillin</div>
+
+        <nav>
+            <button onclick="ordersOpen()">📦 My Orders</button>
+            <button onclick="cartOpen()">🛒 Cart (<span id="count">0</span>)</button>
+            <button onclick="logout()">Log Out</button>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Welcome to bingchillin</h1>
+            <p id="welcome">Browse our products.</p>
+        </section>
+
+        <div class="tools">
+            <input id="search" placeholder="🔎 Search products" oninput="render()">
+
+            <select id="cat" onchange="render()">
+                <option value="">All Categories</option>
+            </select>
+        </div>
+
+        <div id="products" class="grid"></div>
+    </main>
+
+    <footer>bingchillin • Simple online shopping</footer>
+</section>
+
+<div id="cart" class="modal">
+    <div class="box">
+        <button class="close" onclick="closeM('cart')">×</button>
+        <h2>🛒 Your Cart</h2>
+
+        <div id="cartItems"></div>
+        <div id="total" class="total"></div>
+
+        <button class="primary full-width" onclick="checkout()">Order Now</button>
+    </div>
+</div>
+
+<div id="checkout" class="modal">
+    <div class="box">
+        <button class="close" onclick="closeM('checkout')">×</button>
+
+        <h2>📦 Order Now</h2>
+
+        <form class="form" onsubmit="order(event)">
+            <input id="on" placeholder="Full name" required>
+            <input id="oe" type="email" placeholder="Email address" required>
+            <input id="op" placeholder="Phone number" required>
+            <textarea id="oa" placeholder="Delivery address" required></textarea>
+
+            <select id="pay" required>
+                <option value="">Choose payment</option>
+                <option>GCash</option>
+                <option>PayMaya</option>
+                <option>Cash on Delivery</option>
+            </select>
+
+            <button class="primary">Confirm Order</button>
+        </form>
+
+        <div id="om"></div>
+    </div>
+</div>
+
+<div id="orders" class="modal">
+    <div class="box">
+        <button class="close" onclick="closeM('orders')">×</button>
+        <h2>📦 My Orders</h2>
+        <div id="myOrders"></div>
+    </div>
+</div>
+
+<!-- Admin access is intentionally hidden. Press Ctrl+Shift+A. -->
+<div id="adminLogin" class="modal">
+    <div class="box small-box">
+        <button class="close" onclick="closeM('adminLogin')">×</button>
+
+        <h2>Private Access</h2>
+
+        <form class="form" onsubmit="adminLogin(event)">
+            <input id="au" placeholder="Username" required>
+            <input id="ap" type="password" placeholder="Password" required>
+            <button class="primary">Enter</button>
+        </form>
+
+        <div id="am"></div>
+    </div>
+</div>
+
+<div id="admin" class="modal">
+    <div class="box admin-box">
+        <button class="close" onclick="closeM('admin')">×</button>
+
+        <h2>Private Store Management</h2>
+
+        <section class="admin-section">
+            <h3>📦 Customer Orders</h3>
+            <div class="admin-note">
+                Update an order's status and location below. The customer will see the update in My Orders.
+            </div>
+            <div id="adminOrders"></div>
+        </section>
+
+        <hr>
+
+        <section class="admin-section">
+            <h3>👤 Pending Registrations</h3>
+            <div id="pending"></div>
+        </section>
+
+        <hr>
+
+        <section class="admin-section">
+            <h3>🌿 Add / Edit Product</h3>
+
+            <form class="form" onsubmit="saveProduct(event)">
+                <input id="eid" type="hidden">
+
+                <input id="pn" placeholder="Product name" required>
+
+                <input id="pp" type="number" min="0" step="0.01" placeholder="Price per kilogram (₱)" required>
+
+                <input id="pc" placeholder="Category" required>
+
+                <input id="pi" placeholder="Image URL" required>
+
+                <input id="pd" placeholder="Description" required>
+
+                <input id="ps" type="number" min="0" step="0.01" placeholder="Stock in kilograms" required>
+
+                <div class="weight-help">
+                    Product prices are based on 1 kilogram. Customers can buy in kilograms, grams, or ounces.
+                    The system converts the selected weight automatically.
+                </div>
+
+                <button class="primary">Save Product</button>
+                <button type="button" onclick="clearProduct()">Clear</button>
+            </form>
+        </section>
+
+        <section class="admin-section">
+            <h3>Current Products</h3>
+            <div id="adminProducts"></div>
+        </section>
+    </div>
+</div>
+
+</body>
+</html>
